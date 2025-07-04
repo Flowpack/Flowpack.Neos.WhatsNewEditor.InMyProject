@@ -26,12 +26,15 @@ class WhatsNewInProjectController extends ActionController
         $flowQuery = new FlowQuery([$rootNode]);
         $node = $flowQuery->find('[instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Document.WhatsNewDashboardPage]')->get(0);
         $clientNotificationDateTime = $node->getProperty('clientNotificationDateTime');
-        if (!$clientNotificationDateTime instanceof DateTime) {
-            $clientNotificationDateTime = new DateTime('now');
+
+        if ($clientNotificationDateTime instanceof DateTime) {
+            $clientNotificationTimestamp = $clientNotificationDateTime->getTimestamp() * 1000; // to get timestamp in ms instead of seconds to match js timestamp
+        } else {
+            $clientNotificationTimestamp = 0; // If no DateTime is set, we don't want to show the notification
         }
 
         return json_encode([
-            "clientNotificationTimestamp" => $clientNotificationDateTime->getTimestamp() * 1000 // to get timestamp in ms instead of seconds to match js timestamp
+            "clientNotificationTimestamp" => $clientNotificationTimestamp,
         ]);
     }
 
