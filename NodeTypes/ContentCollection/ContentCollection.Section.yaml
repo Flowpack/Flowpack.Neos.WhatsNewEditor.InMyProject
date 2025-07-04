@@ -3,7 +3,7 @@
     'Neos.Neos:ContentCollection': true
   constraints:
     nodeTypes:
+      '*': false
       'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Headline': true
       'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Text': true
       'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Image': true
-
