@@ -1,6 +1,5 @@
 # Neos.WhatsNewEditor.InMyProject
-
-Nodetypes for the Neos CMS for creating content which then can be shown via the corresponding [What's New Dashboard package].
+Nodetypes for the Neos CMS for creating content which then can be shown via the corresponding [What's New Dashboard package](https://github.com/Flowpack/Flowpack.Neos.WhatsNewDashboard).
 
 ## Integration
 
@@ -15,7 +14,7 @@ page > this is the entrypoint for the news. You then can find the page in the `W
 
 ![Page Element](./docs/page.jpg)
 
-The url of this page will then be used for the [What's New Dashboard package] to show the news for your project.
+The url of this page will then be used for the [What's New Dashboard package](https://github.com/Flowpack/Flowpack.Neos.WhatsNewDashboard) to show the news for your project.
 
 ### Components
 
