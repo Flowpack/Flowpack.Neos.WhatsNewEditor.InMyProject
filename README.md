@@ -9,7 +9,8 @@ Install via composer with `composer require flowpack/neos-whatsneweditor-inmypro
 
 ### Usage
 
-Add `'Flowpack.Neos.WhatsNewEditor.InMyProject:Document.WhatsNewDashboardPage': true` to your root (or another) page > this is the entrypoint for the news. You then can find the page in the `What's new dashboard elements` section:
+Add `'Flowpack.Neos.WhatsNewEditor.InMyProject:Document.WhatsNewDashboardPage': true` to your root (or another)
+page > this is the entrypoint for the news. You then can find the page in the `What's new dashboard elements` section:
 
 ![Page Element](./docs/page.jpg)
 
@@ -24,3 +25,5 @@ Below the main content collection you can add 2 kinds of sections. A one column 
 In those sections you can add basic content elements to structure your project news page.
 
 ![Content elements](./docs/contentElements.jpg)
+
+[what's new dashboard package]: https://github.com/Flowpack/Flowpack.Neos.WhatsNewDashboard

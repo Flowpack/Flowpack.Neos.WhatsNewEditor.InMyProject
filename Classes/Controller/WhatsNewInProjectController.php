@@ -7,6 +7,7 @@ use Neos\Eel\FlowQuery\FlowQuery;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ActionController;
 use Neos\Neos\Domain\Service\ContentContext;
+use DateTime;
 
 /**
  * @Flow\Scope("singleton")
@@ -26,8 +27,14 @@ class WhatsNewInProjectController extends ActionController
         $node = $flowQuery->find('[instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Document.WhatsNewDashboardPage]')->get(0);
         $clientNotificationDateTime = $node->getProperty('clientNotificationDateTime');
 
+        if ($clientNotificationDateTime instanceof DateTime) {
+            $clientNotificationTimestamp = $clientNotificationDateTime->getTimestamp() * 1000; // to get timestamp in ms instead of seconds to match js timestamp
+        } else {
+            $clientNotificationTimestamp = 0; // If no DateTime is set, we don't want to show the notification
+        }
+
         return json_encode([
-            "clientNotificationTimestamp" => $clientNotificationDateTime->getTimestamp() * 1000 // to get timestamp in ms instead of seconds to match js timestamp
+            "clientNotificationTimestamp" => $clientNotificationTimestamp,
         ]);
     }
 

@@ -1,0 +1,8 @@
+'Neos.Neos:ContentCollection':
+  constraints:
+    nodeTypes:
+      'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Section.OneColumn': false
+      'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Section.TwoColumns': false
+      'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Headline': false
+      'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Text': false
+      'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Image': false

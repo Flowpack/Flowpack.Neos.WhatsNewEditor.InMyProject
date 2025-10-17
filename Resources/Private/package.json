@@ -9,7 +9,7 @@
     "watch:js": "node ./build.mjs --watch",
     "watch:typecheck": "nodemon -e ts -x \"yarn run typecheck || echo '!!!!!!!!!!!!!!!!!!!!!! TypeScript Errors, Please fix !!!!!!!!!!!!!!!!!!!!!!'\"",
     "build": "yarn run typecheck && yarn run build:tailwind && yarn run build:js",
-    "build:tailwind": "npx tailwindcss -i ./tailwind.css -o ../Public/main.css",
+    "build:tailwind": "npx tailwindcss -m -i ./tailwind.css -o ../Public/main.css",
     "build:js": "node ./build.mjs",
     "postbuild:css": "./node_modules/.bin/postcss --use autoprefixer --autoprefixer.browsers 'last 4 versions' ../Public/*.css -d ../Public/",
     "typecheck": "tsc -noEmit"

@@ -3,5 +3,6 @@
     'Neos.Neos:ContentCollection': true
   constraints:
     nodeTypes:
+      '*': false
       'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Section.OneColumn': true
       'Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Section.TwoColumns': true
