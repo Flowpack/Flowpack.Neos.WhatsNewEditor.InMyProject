@@ -1,30 +1,43 @@
 <?php
+
 namespace Flowpack\Neos\WhatsNewEditor\InMyProject\Controller;
 
-use Neos\ContentRepository\Domain\Model\NodeInterface;
-use Neos\ContentRepository\Domain\Service\ContextFactoryInterface;
 use Neos\Eel\FlowQuery\FlowQuery;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ActionController;
-use Neos\Neos\Domain\Service\ContentContext;
 use DateTime;
+use Neos\ContentRepository\Core\DimensionSpace\DimensionSpacePoint;
+use Neos\ContentRepository\Core\NodeType\NodeTypeName;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Node;
+use Neos\ContentRepository\Core\Projection\ContentGraph\VisibilityConstraints;
+use Neos\ContentRepository\Core\SharedModel\ContentRepository\ContentRepositoryId;
+use Neos\ContentRepository\Core\SharedModel\Workspace\WorkspaceName;
+use Neos\ContentRepositoryRegistry\ContentRepositoryRegistry;
 
 /**
  * @Flow\Scope("singleton")
  */
 class WhatsNewInProjectController extends ActionController
 {
-    #[Flow\Inject]
-    protected ContextFactoryInterface $contextFactory;
 
-    /**
-     * @return string
-     */
-    public function indexAction()
+    public function __construct(
+        private readonly ContentRepositoryRegistry $contentRepositoryRegistry,
+    ) {}
+
+    public function indexAction(): string | false
     {
-        $rootNode = $this->getSiteNode();
-        $flowQuery = new FlowQuery([$rootNode]);
-        $node = $flowQuery->find('[instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Document.WhatsNewDashboardPage]')->get(0);
+        $siteNode = $this->getSiteNode();
+        if ($siteNode === null) {
+            return json_encode([
+                "clientNotificationTimestamp" => 0,
+            ]);
+        }
+
+        /** @phpstan-ignore-next-line */
+        $node = FlowQuery::q($siteNode)
+            ->find('[instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Document.WhatsNewDashboardPage]')
+            ->get(0);
+
         $clientNotificationDateTime = $node->getProperty('clientNotificationDateTime');
 
         if ($clientNotificationDateTime instanceof DateTime) {
@@ -39,20 +52,38 @@ class WhatsNewInProjectController extends ActionController
     }
 
     /**
-     * @return NodeInterface
+     * @return \Neos\ContentRepository\Core\Projection\ContentGraph\Node
      */
-    private function getSiteNode(): NodeInterface
+    private function getSiteNode(): ?Node
     {
-        /** @var ContentContext $context */
-        $context = $this->contextFactory->create([
-            'workspaceName' => 'live',
-            'invisibleContentShown' => true,
-            'dimensions' => [
-            ],
-            'targetDimensions' => [
-            ]
+        $contentRepositoryId = ContentRepositoryId::fromString('default');
+        $contentRepository = $this->contentRepositoryRegistry->get($contentRepositoryId);
 
-        ]);
-        return $context->getCurrentSiteNode();
+        $workspaceName = WorkspaceName::fromString('live');
+        $contentGraph = $contentRepository->getContentGraph($workspaceName);
+
+        // Use empty dimensions for default content
+        $dimensionSpacePoint = DimensionSpacePoint::fromArray([]);
+        $contentSubgraph = $contentGraph->getSubgraph(
+            $dimensionSpacePoint,
+            VisibilityConstraints::createEmpty()
+        );
+
+        // Find the Sites root node
+        $sitesRootNode = $contentSubgraph->findRootNodeByType(
+            NodeTypeName::fromString('Neos.Neos:Sites')
+        );
+
+        if ($sitesRootNode === null) {
+            return null;
+        }
+
+        // Find the first site node (child of Sites root)
+        /** @phpstan-ignore-next-line */
+        $siteNode = FlowQuery::q($sitesRootNode)
+            ->children('[instanceof Neos.Neos:Site]')
+            ->get(0);
+
+        return $siteNode instanceof Node ? $siteNode : null;
     }
 }
