@@ -11,7 +11,7 @@
         "NodeTypes"
     ],
     "require": {
-        "neos/flow": "*",
+        "neos/flow": "^9",
         "sitegeist/kaleidoscope": "*",
         "packagefactory/atomicfusion-classnames": "^1.0"
     },

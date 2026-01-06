@@ -1,3 +1,3 @@
 prototype(Flowpack.Neos.WhatsNewEditor.InMyProject:Helper.InBackend) < prototype(Neos.Fusion:Value) {
-    value = ${renderingMode.isEdit && renderingMode.isEdit}
+    value = ${renderingMode.isEdit}
 }

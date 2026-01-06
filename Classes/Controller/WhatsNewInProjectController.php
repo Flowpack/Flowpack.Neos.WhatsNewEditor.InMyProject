@@ -51,9 +51,6 @@ class WhatsNewInProjectController extends ActionController
         ]);
     }
 
-    /**
-     * @return \Neos\ContentRepository\Core\Projection\ContentGraph\Node
-     */
     private function getSiteNode(): ?Node
     {
         $contentRepositoryId = ContentRepositoryId::fromString('default');
@@ -62,14 +59,12 @@ class WhatsNewInProjectController extends ActionController
         $workspaceName = WorkspaceName::fromString('live');
         $contentGraph = $contentRepository->getContentGraph($workspaceName);
 
-        // Use empty dimensions for default content
         $dimensionSpacePoint = DimensionSpacePoint::fromArray([]);
         $contentSubgraph = $contentGraph->getSubgraph(
             $dimensionSpacePoint,
             VisibilityConstraints::createEmpty()
         );
 
-        // Find the Sites root node
         $sitesRootNode = $contentSubgraph->findRootNodeByType(
             NodeTypeName::fromString('Neos.Neos:Sites')
         );
@@ -78,7 +73,6 @@ class WhatsNewInProjectController extends ActionController
             return null;
         }
 
-        // Find the first site node (child of Sites root)
         /** @phpstan-ignore-next-line */
         $siteNode = FlowQuery::q($sitesRootNode)
             ->children('[instanceof Neos.Neos:Site]')
