@@ -38,7 +38,7 @@ prototype(Flowpack.Neos.WhatsNewEditor.InMyProject:Document.WhatsNewDashboardPag
                         property = 'introText'
                     }
                     menuEntries = Neos.Fusion:Map {
-                        items = ${q(documentNode).find('[instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Section.OneColumn], [instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Section.TwoColumns]').get()}
+                        items = ${q(documentNode).find('[instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Section.OneColumn],[instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Content.Section.TwoColumns]').get()}
                         itemRenderer = ${q(item).property('sectionTitle')}
                     }
                 }
