@@ -3,6 +3,15 @@ Nodetypes for the Neos CMS for creating content which then can be shown via the 
 
 ## Integration
 
+### Compatibility and maintenance
+
+| Neos / Flow Version        | Package version | Maintained |
+|----------------------------|-----------------------------|------------|
+| Neos 9.x | 2.x                         | Yes        |
+| Neos 8.x        | 1.0.1                        | No        |
+
+
+
 ### Installation
 
 Install via composer with `composer require flowpack/neos-whatsneweditor-inmyproject`.
