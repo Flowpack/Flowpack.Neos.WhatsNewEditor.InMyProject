@@ -5,8 +5,7 @@ namespace Flowpack\Neos\WhatsNewEditor\InMyProject\Controller;
 use Neos\Eel\FlowQuery\FlowQuery;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ActionController;
-use DateTime;
-use Neos\ContentRepository\Core\DimensionSpace\DimensionSpacePoint;
+use DateTimeInterface;
 use Neos\ContentRepository\Core\NodeType\NodeTypeName;
 use Neos\ContentRepository\Core\Projection\ContentGraph\Node;
 use Neos\ContentRepository\Core\Projection\ContentGraph\VisibilityConstraints;
@@ -38,9 +37,12 @@ class WhatsNewInProjectController extends ActionController
             ->find('[instanceof Flowpack.Neos.WhatsNewEditor.InMyProject:Document.WhatsNewDashboardPage]')
             ->get(0);
 
-        $clientNotificationDateTime = $node->getProperty('clientNotificationDateTime');
+        // No WhatsNewDashboardPage in the site yet -> nullsafe call, no notification.
+        $clientNotificationDateTime = $node?->getProperty('clientNotificationDateTime');
 
-        if ($clientNotificationDateTime instanceof DateTime) {
+        // The content repository returns the property as DateTimeImmutable, so check
+        // against the shared interface instead of the mutable DateTime class.
+        if ($clientNotificationDateTime instanceof DateTimeInterface) {
             $clientNotificationTimestamp = $clientNotificationDateTime->getTimestamp() * 1000; // to get timestamp in ms instead of seconds to match js timestamp
         } else {
             $clientNotificationTimestamp = 0; // If no DateTime is set, we don't want to show the notification
@@ -59,25 +61,34 @@ class WhatsNewInProjectController extends ActionController
         $workspaceName = WorkspaceName::fromString('live');
         $contentGraph = $contentRepository->getContentGraph($workspaceName);
 
-        $dimensionSpacePoint = DimensionSpacePoint::fromArray([]);
-        $contentSubgraph = $contentGraph->getSubgraph(
-            $dimensionSpacePoint,
-            VisibilityConstraints::createEmpty()
-        );
+        // The site node only exists in concrete dimension space points (an empty
+        // dimension space point matches nothing on sites with content dimensions),
+        // so try all allowed ones — for a dimensionless setup this is just the
+        // single empty dimension space point.
+        foreach ($contentRepository->getVariationGraph()->getDimensionSpacePoints() as $dimensionSpacePoint) {
+            $contentSubgraph = $contentGraph->getSubgraph(
+                $dimensionSpacePoint,
+                VisibilityConstraints::createEmpty()
+            );
 
-        $sitesRootNode = $contentSubgraph->findRootNodeByType(
-            NodeTypeName::fromString('Neos.Neos:Sites')
-        );
+            $sitesRootNode = $contentSubgraph->findRootNodeByType(
+                NodeTypeName::fromString('Neos.Neos:Sites')
+            );
 
-        if ($sitesRootNode === null) {
-            return null;
+            if ($sitesRootNode === null) {
+                continue;
+            }
+
+            /** @phpstan-ignore-next-line */
+            $siteNode = FlowQuery::q($sitesRootNode)
+                ->children('[instanceof Neos.Neos:Site]')
+                ->get(0);
+
+            if ($siteNode instanceof Node) {
+                return $siteNode;
+            }
         }
 
-        /** @phpstan-ignore-next-line */
-        $siteNode = FlowQuery::q($sitesRootNode)
-            ->children('[instanceof Neos.Neos:Site]')
-            ->get(0);
-
-        return $siteNode instanceof Node ? $siteNode : null;
+        return null;
     }
 }
